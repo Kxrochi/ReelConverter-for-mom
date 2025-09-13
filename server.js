@@ -6,6 +6,7 @@ const { spawn } = require('child_process');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || '0.0.0.0';
 
 // Middleware
 app.use(cors());
@@ -25,20 +26,40 @@ function isValidInstagramURL(url) {
 // Function to check if yt-dlp is available
 function checkYtDlpAvailable() {
     return new Promise((resolve) => {
-        const python = spawn('python', ['--version']);
-        python.on('close', (code) => {
-            if (code === 0) {
-                // Check if yt-dlp is installed
-                const ytdlp = spawn('python', ['-c', 'import yt_dlp; print("yt-dlp available")']);
-                ytdlp.on('close', (ytdlpCode) => {
-                    resolve(ytdlpCode === 0);
-                });
-                ytdlp.on('error', () => resolve(false));
-            } else {
+        // Try python3 first (common in cloud environments), then python
+        const pythonCommands = ['python3', 'python'];
+        let currentIndex = 0;
+        
+        function tryNext() {
+            if (currentIndex >= pythonCommands.length) {
                 resolve(false);
+                return;
             }
-        });
-        python.on('error', () => resolve(false));
+            
+            const python = spawn(pythonCommands[currentIndex], ['--version']);
+            python.on('close', (code) => {
+                if (code === 0) {
+                    // Check if yt-dlp is installed
+                    const ytdlp = spawn(pythonCommands[currentIndex], ['-c', 'import yt_dlp; print("yt-dlp available")']);
+                    ytdlp.on('close', (ytdlpCode) => {
+                        resolve(ytdlpCode === 0);
+                    });
+                    ytdlp.on('error', () => {
+                        currentIndex++;
+                        tryNext();
+                    });
+                } else {
+                    currentIndex++;
+                    tryNext();
+                }
+            });
+            python.on('error', () => {
+                currentIndex++;
+                tryNext();
+            });
+        }
+        
+        tryNext();
     });
 }
 
@@ -47,8 +68,9 @@ async function downloadInstagramReel(instagramURL) {
     return new Promise((resolve, reject) => {
         console.log('Starting download with yt-dlp...');
         
-        // Use our Python script
-        const python = spawn('python', [
+        // Use our Python script (try python3 first, then python)
+        const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+        const python = spawn(pythonCommand, [
             path.join(__dirname, 'yt-dlp-downloader.py'),
             instagramURL,
             downloadsDir
@@ -146,13 +168,23 @@ app.post('/api/download', async (req, res) => {
 // Serve downloaded files
 app.use('/downloads', express.static(downloadsDir));
 
+// Health check endpoint for Railway
+app.get('/health', (req, res) => {
+    res.json({ 
+        status: 'healthy', 
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
+
 // Serve the main page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Start server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(PORT, HOST, () => {
+    console.log(`Server is running on http://${HOST}:${PORT}`);
     console.log(`Downloads directory: ${downloadsDir}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });

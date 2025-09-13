@@ -27,13 +27,15 @@ def download_instagram_reel(url, output_dir):
         # Ensure output directory exists
         Path(output_dir).mkdir(parents=True, exist_ok=True)
         
-        # yt-dlp command with options optimized for Instagram
+        # yt-dlp command with options optimized for Instagram and cloud deployment
         cmd = [
             'yt-dlp',
             '--no-playlist',
             '--format', 'best',  # Use best available format
             '--output', os.path.join(output_dir, '%(title)s.%(ext)s'),
             '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            '--no-check-certificate',  # For cloud environments
+            '--extractor-args', 'instagram:webpage_url_basename=',
             url
         ]
         
