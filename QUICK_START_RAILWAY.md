@@ -10,12 +10,14 @@ cd "C:\Users\user\Desktop\ReelConverter for mom"
 # Initialize git if not already done
 git init
 
-# Add all files
+# Add all files (excluding any Dockerfile)
 git add .
 
 # Commit changes
-git commit -m "Ready for Railway deployment"
+git commit -m "Ready for Railway deployment with nixpacks"
 ```
+
+**Important**: Make sure there's no `Dockerfile` in your project - Railway should use nixpacks instead!
 
 ### Step 2: Push to GitHub
 ```bash
