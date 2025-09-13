@@ -1,26 +1,25 @@
-# Use Python base image (includes both Python and Node.js can be installed)
-FROM python:3.11-slim
+# Use Node.js base image (more reliable for Railway)
+FROM node:18-slim
+
+# Install Python and system dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-venv \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
-# Install Node.js
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    ffmpeg \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy package files
+# Copy package files first for better caching
 COPY package*.json ./
 
 # Install Node.js dependencies
-RUN npm install
+RUN npm install --only=production
 
 # Install Python dependencies
-RUN pip install yt-dlp
+RUN pip3 install yt-dlp
 
 # Copy application files
 COPY . .

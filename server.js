@@ -27,17 +27,32 @@ function isValidInstagramURL(url) {
 // Function to check if yt-dlp is available
 function checkYtDlpAvailable() {
     return new Promise((resolve) => {
-        const python = spawn('python', ['--version']);
+        // Try python3 first (common in cloud environments)
+        const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+        const python = spawn(pythonCmd, ['--version']);
         python.on('close', (code) => {
             if (code === 0) {
                 // Check if yt-dlp is installed
-                const ytdlp = spawn('python', ['-c', 'import yt_dlp; print("yt-dlp available")']);
+                const ytdlp = spawn(pythonCmd, ['-c', 'import yt_dlp; print("yt-dlp available")']);
                 ytdlp.on('close', (ytdlpCode) => {
                     resolve(ytdlpCode === 0);
                 });
                 ytdlp.on('error', () => resolve(false));
             } else {
-                resolve(false);
+                // Try python as fallback
+                const pythonFallback = spawn('python', ['--version']);
+                pythonFallback.on('close', (fallbackCode) => {
+                    if (fallbackCode === 0) {
+                        const ytdlp = spawn('python', ['-c', 'import yt_dlp; print("yt-dlp available")']);
+                        ytdlp.on('close', (ytdlpCode) => {
+                            resolve(ytdlpCode === 0);
+                        });
+                        ytdlp.on('error', () => resolve(false));
+                    } else {
+                        resolve(false);
+                    }
+                });
+                pythonFallback.on('error', () => resolve(false));
             }
         });
         python.on('error', () => resolve(false));
@@ -50,7 +65,8 @@ async function downloadInstagramReel(instagramURL) {
         console.log('Starting download with yt-dlp...');
         
         // Use our Python script
-        const python = spawn('python', [
+        const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+        const python = spawn(pythonCmd, [
             path.join(__dirname, 'yt-dlp-downloader.py'),
             instagramURL,
             downloadsDir
