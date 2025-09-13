@@ -207,76 +207,6 @@ body {
     font-size: 0.9rem;
 }
 
-/* Mobile access styles */
-.mobile-access {
-    margin-top: 30px;
-    padding: 20px;
-    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-    border-radius: 15px;
-    color: white;
-    text-align: center;
-}
-
-.mobile-access h3 {
-    margin: 0 0 15px 0;
-    font-size: 1.3rem;
-    font-weight: 600;
-}
-
-.mobile-access p {
-    margin: 0 0 15px 0;
-    opacity: 0.9;
-}
-
-.qrcode-container {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-}
-
-.qrcode-container canvas {
-    border-radius: 8px;
-}
-
-.mobile-url {
-    font-family: 'Courier New', monospace;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    word-break: break-all;
-    margin: 10px 0;
-}
-
-.global-access-info {
-    margin-top: 20px;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.global-access-info h4 {
-    margin: 0 0 10px 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.global-access-info p {
-    margin: 5px 0;
-    font-size: 0.9rem;
-    opacity: 0.95;
-}
-
-.global-access-info strong {
-    color: #fff;
-    font-weight: 600;
-    word-break: break-all;
-}
-
 /* Status section styles */
 .status-section {
     background: white;
@@ -502,160 +432,45 @@ body {
     display: none !important;
 }
 
-/* Mobile-first responsive design */
+/* Responsive design */
 @media (max-width: 768px) {
     .container {
-        padding: 10px;
-        min-height: 100vh;
-    }
-    
-    .header {
-        padding: 20px 0;
-        margin-bottom: 20px;
-    }
-    
-    .logo {
-        flex-direction: column;
-        gap: 10px;
+        padding: 15px;
     }
     
     .logo h1 {
-        font-size: 1.8rem;
-        text-align: center;
+        font-size: 2rem;
     }
     
     .logo i {
-        font-size: 2.2rem;
-    }
-    
-    .subtitle {
-        font-size: 1rem;
-        text-align: center;
-    }
-    
-    .download-section {
-        padding: 20px;
-        margin-bottom: 20px;
+        font-size: 2.5rem;
     }
     
     .input-group {
         flex-direction: column;
-        gap: 10px;
     }
     
     .download-btn {
         width: 100%;
         justify-content: center;
-        padding: 15px 20px;
-        font-size: 1.1rem;
     }
     
     .result-actions {
         flex-direction: column;
         width: 100%;
-        gap: 10px;
     }
     
     .download-link-btn, .new-download-btn {
         width: 100%;
         justify-content: center;
-        padding: 12px 20px;
     }
     
     .example-urls {
         align-items: center;
-        gap: 8px;
     }
     
     .example-url {
         text-align: center;
         word-break: break-all;
-        font-size: 0.75rem;
-        padding: 8px 12px;
-    }
-    
-    .setup-instructions {
-        padding: 15px;
-        margin-top: 20px;
-    }
-    
-    .setup-instructions h3 {
-        font-size: 1.1rem;
-        margin-bottom: 10px;
-    }
-    
-    .setup-instructions ol {
-        padding-left: 15px;
-    }
-    
-    .setup-instructions li {
-        margin-bottom: 6px;
-        font-size: 0.9rem;
-    }
-    
-    .status-section, .result-section, .error-section {
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-    
-    .success-icon, .error-icon {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .success-icon i, .error-icon i {
-        font-size: 2rem;
-    }
-    
-    .result-content h3, .error-content h3 {
-        font-size: 1.5rem;
-    }
-    
-    .footer {
-        margin-top: 20px;
-        padding: 15px 0;
-    }
-    
-    .footer-links {
-        flex-direction: column;
-        gap: 10px;
-    }
-}
-
-/* Extra small devices */
-@media (max-width: 480px) {
-    .container {
-        padding: 5px;
-    }
-    
-    .logo h1 {
-        font-size: 1.5rem;
-    }
-    
-    .logo i {
-        font-size: 2rem;
-    }
-    
-    .download-section {
-        padding: 15px;
-    }
-    
-    .input-group {
-        gap: 8px;
-    }
-    
-    #urlInput {
-        padding: 12px 12px 12px 40px;
-        font-size: 0.9rem;
-    }
-    
-    .download-btn {
-        padding: 12px 15px;
-        font-size: 1rem;
-    }
-    
-    .example-url {
-        font-size: 0.7rem;
-        padding: 6px 10px;
     }
 }

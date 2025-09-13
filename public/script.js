@@ -18,7 +18,6 @@ let isDownloading = false;
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
-    generateQRCode();
     urlInput.focus();
 });
 
@@ -225,66 +224,6 @@ document.body.style.transition = 'opacity 0.5s ease';
 window.addEventListener('load', function() {
     document.body.style.opacity = '1';
 });
-
-// Generate QR code for mobile access
-function generateQRCode() {
-    // Get the current URL
-    const currentUrl = window.location.href;
-    let mobileUrl = currentUrl;
-    
-    // Check if we're on localhost (local development)
-    if (currentUrl.includes('localhost') || currentUrl.includes('127.0.0.1')) {
-        mobileUrl = currentUrl.replace('localhost', getLocalIP());
-        // Show local network instructions
-        document.getElementById('mobileInstructions').textContent = 'Scan this QR code with your phone to access the downloader (same WiFi network required):';
-    } else {
-        // We're on a deployed URL - show global access info
-        document.getElementById('mobileInstructions').textContent = 'Scan this QR code with your phone to access the downloader from anywhere:';
-        
-        // Show global access info
-        const globalAccess = document.getElementById('globalAccess');
-        const globalUrl = document.getElementById('globalUrl');
-        if (globalAccess && globalUrl) {
-            globalAccess.classList.remove('hidden');
-            globalUrl.textContent = currentUrl;
-        }
-    }
-    
-    // Update the mobile URL display
-    const mobileUrlElement = document.getElementById('mobileUrl');
-    if (mobileUrlElement) {
-        mobileUrlElement.textContent = mobileUrl;
-    }
-    
-    // Generate QR code
-    const qrContainer = document.getElementById('qrcode');
-    if (qrContainer && typeof QRCode !== 'undefined') {
-        QRCode.toCanvas(qrContainer, mobileUrl, {
-            width: 200,
-            height: 200,
-            color: {
-                dark: '#667eea',
-                light: '#ffffff'
-            }
-        }, function (error) {
-            if (error) {
-                console.error('QR Code generation failed:', error);
-                qrContainer.innerHTML = '<p>QR Code unavailable</p>';
-            }
-        });
-    }
-}
-
-// Get local IP address (simplified version)
-function getLocalIP() {
-    // This is a simplified approach - in a real app, you'd get this from the server
-    const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-        // For localhost, we'll use a placeholder that the user can replace
-        return '192.168.1.100'; // User should replace with their actual IP
-    }
-    return hostname;
-}
 
 // Add some console styling for debugging
 console.log('%c🎬 Instagram Reel Downloader', 'color: #667eea; font-size: 20px; font-weight: bold;');
