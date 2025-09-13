@@ -20,6 +20,8 @@ A modern web application that allows you to download Instagram reels by simply p
 
 ## Installation
 
+### Local Development
+
 1. **Clone or download this repository**
    ```bash
    git clone <repository-url>
@@ -42,6 +44,28 @@ A modern web application that allows you to download Instagram reels by simply p
 
 5. **Open your browser**
    Navigate to `http://localhost:3000`
+
+### Cloud Deployment (Railway)
+
+1. **Push to GitHub**
+   ```bash
+   git add .
+   git commit -m "Ready for Railway deployment"
+   git push origin main
+   ```
+
+2. **Deploy to Railway**
+   - Go to [railway.app](https://railway.app)
+   - Sign in with GitHub
+   - Create new project from your repository
+   - Deploy automatically!
+
+3. **Access your app**
+   - Railway provides a public URL
+   - Automatic HTTPS included
+   - Global CDN
+
+See [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md) for detailed instructions.
 
 ## Usage
 
