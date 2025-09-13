@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Reel Downloader</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <i class="fab fa-instagram"></i>
+                <h1>Instagram Reel Downloader</h1>
+            </div>
+            <p class="subtitle">Download Instagram reels quickly and easily</p>
+        </header>
+
+        <main class="main-content">
+            <div class="download-section">
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-link input-icon"></i>
+                        <input 
+                            type="url" 
+                            id="urlInput" 
+                            placeholder="Paste Instagram reel URL here..."
+                            autocomplete="off"
+                        >
+                    </div>
+                    <button id="downloadBtn" class="download-btn">
+                        <i class="fas fa-download"></i>
+                        Download
+                    </button>
+                </div>
+
+                <div class="url-examples">
+                    <p>Example URLs:</p>
+                    <div class="example-urls">
+                        <span class="example-url">https://www.instagram.com/reel/ABC123/</span>
+                        <span class="example-url">https://www.instagram.com/p/XYZ789/</span>
+                    </div>
+                </div>
+
+                <div class="setup-instructions">
+                    <h3>🚀 First Time Setup</h3>
+                    <p>Before downloading, you need to install yt-dlp:</p>
+                    <ol>
+                        <li>Make sure Python is installed on your computer</li>
+                        <li>Double-click <code>install-yt-dlp.bat</code> in the project folder</li>
+                        <li>Wait for the installation to complete</li>
+                        <li>Refresh this page and try downloading!</li>
+                    </ol>
+                </div>
+
+                <div class="mobile-access">
+                    <h3>📱 Access from Your Phone</h3>
+                    <p id="mobileInstructions">Scan this QR code with your phone to access the downloader:</p>
+                    <div id="qrcode" class="qrcode-container"></div>
+                    <p class="mobile-url" id="mobileUrl">Loading...</p>
+                    <div id="globalAccess" class="global-access-info hidden">
+                        <h4>🌍 Global Access</h4>
+                        <p>This app is deployed globally! You can access it from anywhere in the world.</p>
+                        <p>Share this URL with anyone: <strong id="globalUrl"></strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="statusSection" class="status-section hidden">
+                <div class="status-content">
+                    <div class="spinner" id="spinner">
+                        <div class="spinner-ring"></div>
+                    </div>
+                    <p id="statusText">Processing...</p>
+                </div>
+            </div>
+
+            <div id="resultSection" class="result-section hidden">
+                <div class="result-content">
+                    <div class="success-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3>Download Complete!</h3>
+                    <p id="resultMessage">Your video has been downloaded successfully.</p>
+                    <div class="result-actions">
+                        <a id="downloadLink" href="#" class="download-link-btn" download>
+                            <i class="fas fa-download"></i>
+                            Download Video
+                        </a>
+                        <button id="newDownloadBtn" class="new-download-btn">
+                            <i class="fas fa-plus"></i>
+                            Download Another
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="errorSection" class="error-section hidden">
+                <div class="error-content">
+                    <div class="error-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3>Download Failed</h3>
+                    <p id="errorMessage">An error occurred while downloading the video.</p>
+                    <button id="retryBtn" class="retry-btn">
+                        <i class="fas fa-redo"></i>
+                        Try Again
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <p>&copy; 2024 Instagram Reel Downloader. For educational purposes only.</p>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="#" class="footer-link">Terms of Service</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
