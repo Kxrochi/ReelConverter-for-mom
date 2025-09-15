@@ -1,158 +1,159 @@
 const express = require('express');
-const cors = require('cors');
-const fs = require('fs-extra');
 const path = require('path');
-const { spawn } = require('child_process');
+const cors = require('cors');
+const helmet = require('helmet');
+const compression = require('compression');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.static('public'));
+// Security middleware
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:", "https:"],
+            connectSrc: ["'self'"]
+        }
+    }
+}));
 
-// Create downloads directory
-const downloadsDir = path.join(__dirname, 'downloads');
-fs.ensureDirSync(downloadsDir);
+// CORS configuration
+app.use(cors({
+    origin: process.env.NODE_ENV === 'production' 
+        ? ['https://your-domain.railway.app'] 
+        : ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    credentials: true
+}));
 
-// Function to validate Instagram URL
-function isValidInstagramURL(url) {
-    const instagramRegex = /^https?:\/\/(www\.)?instagram\.com\/(p|reel)\/[A-Za-z0-9_-]+\/?/;
-    return instagramRegex.test(url);
-}
+// Compression middleware
+app.use(compression());
 
-// Function to check if yt-dlp is available
-function checkYtDlpAvailable() {
-    return new Promise((resolve) => {
-        const python = spawn('python', ['--version']);
-        python.on('close', (code) => {
-            if (code === 0) {
-                // Check if yt-dlp is installed
-                const ytdlp = spawn('python', ['-c', 'import yt_dlp; print("yt-dlp available")']);
-                ytdlp.on('close', (ytdlpCode) => {
-                    resolve(ytdlpCode === 0);
-                });
-                ytdlp.on('error', () => resolve(false));
-            } else {
-                resolve(false);
-            }
-        });
-        python.on('error', () => resolve(false));
+// Body parsing middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Serve static files
+app.use(express.static(path.join(__dirname), {
+    maxAge: process.env.NODE_ENV === 'production' ? '1d' : '0'
+}));
+
+// API Routes
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'OK',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV || 'development'
     });
-}
+});
 
-// Function to download Instagram reel using yt-dlp
-async function downloadInstagramReel(instagramURL) {
-    return new Promise((resolve, reject) => {
-        console.log('Starting download with yt-dlp...');
-        
-        // Use our Python script
-        const python = spawn('python', [
-            path.join(__dirname, 'yt-dlp-downloader.py'),
-            instagramURL,
-            downloadsDir
-        ]);
-
-        let output = '';
-        let errorOutput = '';
-
-        python.stdout.on('data', (data) => {
-            output += data.toString();
-        });
-
-        python.stderr.on('data', (data) => {
-            errorOutput += data.toString();
-        });
-
-        python.on('close', (code) => {
-            try {
-                const result = JSON.parse(output);
-                if (result.success) {
-                    console.log('Download successful:', result.filename);
-                    resolve(result);
-                } else {
-                    console.error('Download failed:', result.error);
-                    reject(new Error(result.error));
-                }
-            } catch (e) {
-                console.error('Failed to parse yt-dlp output:', errorOutput);
-                reject(new Error('Failed to download video: ' + errorOutput));
-            }
-        });
-
-        python.on('error', (error) => {
-            console.error('Python process error:', error);
-            reject(new Error('Failed to start download process: ' + error.message));
-        });
-
-        // Set timeout
-        setTimeout(() => {
-            python.kill();
-            reject(new Error('Download timeout'));
-        }, 300000); // 5 minutes
+app.get('/api/info', (req, res) => {
+    res.json({
+        name: 'Railway Website Template',
+        version: '1.0.0',
+        description: 'A modern website template ready for deployment on Railway',
+        features: [
+            'Responsive Design',
+            'Modern UI/UX',
+            'Express.js Server',
+            'Railway Ready',
+            'Security Headers',
+            'Performance Optimized'
+        ]
     });
-}
+});
 
-// API endpoint to download Instagram reel
-app.post('/api/download', async (req, res) => {
+// Contact form submission endpoint
+app.post('/api/contact', (req, res) => {
     try {
-        const { url } = req.body;
-        console.log('Download request for URL:', url);
-
-        if (!url || !isValidInstagramURL(url)) {
-            console.log('Invalid URL provided:', url);
+        const { name, email, message } = req.body;
+        
+        // Basic validation
+        if (!name || !email || !message) {
             return res.status(400).json({
                 success: false,
-                error: 'Please provide a valid Instagram reel URL'
+                message: 'All fields are required'
             });
         }
-
-        console.log('URL is valid, checking yt-dlp availability...');
         
-        // Check if yt-dlp is available
-        const ytdlpAvailable = await checkYtDlpAvailable();
-        if (!ytdlpAvailable) {
-            return res.status(500).json({
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
                 success: false,
-                error: 'yt-dlp is not installed. Please run install-yt-dlp.bat to install it first.'
+                message: 'Please enter a valid email address'
             });
         }
-
-        console.log('yt-dlp is available, starting download...');
         
-        // Download video using yt-dlp
-        const result = await downloadInstagramReel(url);
-
-        console.log('Video downloaded successfully:', result.filename);
-
+        // In a real application, you would:
+        // 1. Save to database
+        // 2. Send email notification
+        // 3. Add to CRM system
+        
+        console.log('Contact form submission:', { name, email, message });
+        
         res.json({
             success: true,
-            message: 'Video downloaded successfully',
-            filename: result.filename,
-            downloadUrl: `/downloads/${result.filename}`,
-            size: result.size
+            message: 'Thank you for your message! We\'ll get back to you soon.'
         });
-
+        
     } catch (error) {
-        console.error('Download error:', error.message);
+        console.error('Contact form error:', error);
         res.status(500).json({
             success: false,
-            error: error.message || 'An error occurred while downloading the video'
+            message: 'Something went wrong. Please try again later.'
         });
     }
 });
 
-// Serve downloaded files
-app.use('/downloads', express.static(downloadsDir));
+// Catch-all handler: send back React's index.html file for client-side routing
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
-// Serve the main page
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Error:', err.stack);
+    res.status(500).json({
+        success: false,
+        message: 'Something went wrong!',
+        ...(process.env.NODE_ENV === 'development' && { error: err.message })
+    });
+});
+
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        message: 'Route not found'
+    });
 });
 
 // Start server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-    console.log(`Downloads directory: ${downloadsDir}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`
+🚀 Railway Website Template Server Started!
+   
+   📍 Server running on port ${PORT}
+   🌐 Environment: ${process.env.NODE_ENV || 'development'}
+   🔗 Local: http://localhost:${PORT}
+   📊 Health check: http://localhost:${PORT}/api/health
+   
+   Ready for Railway deployment! 🎉
+    `);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received. Shutting down gracefully...');
+    process.exit(0);
+});
+
+process.on('SIGINT', () => {
+    console.log('SIGINT received. Shutting down gracefully...');
+    process.exit(0);
 });

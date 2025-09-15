@@ -1,0 +1,43 @@
+{
+  "name": "railway-website-template",
+  "version": "1.0.0",
+  "description": "A modern website template ready for deployment on Railway",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "echo 'No build step required for this template'",
+    "test": "echo 'No tests specified'"
+  },
+  "keywords": [
+    "railway",
+    "website",
+    "template",
+    "express",
+    "nodejs",
+    "responsive"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/railway-website-template.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/railway-website-template/issues"
+  },
+  "homepage": "https://github.com/yourusername/railway-website-template#readme"
+}
