@@ -1,15 +1,13 @@
 # Use Node.js 18 Alpine as base image
 FROM node:18-alpine
 
-# Install system dependencies
+# Install system dependencies including yt-dlp
 RUN apk add --no-cache \
     python3 \
     py3-pip \
     curl \
-    ffmpeg
-
-# Install yt-dlp
-RUN pip install yt-dlp
+    ffmpeg \
+    yt-dlp
 
 # Set working directory
 WORKDIR /app

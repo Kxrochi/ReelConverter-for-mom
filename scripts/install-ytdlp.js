@@ -9,16 +9,22 @@ try {
     const isRailway = process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production';
     
     if (isRailway) {
-        // On Railway, install yt-dlp using apt
-        console.log('Installing yt-dlp via apt (Railway environment)...');
+        // On Railway, try different installation methods
+        console.log('Installing yt-dlp (Railway environment)...');
         try {
+            // Try apt-get first (Ubuntu/Debian)
             execSync('apt-get update', { stdio: 'inherit' });
             execSync('apt-get install -y yt-dlp', { stdio: 'inherit' });
         } catch (error) {
-            console.log('apt-get failed, trying alternative installation...');
-            // Alternative installation method
-            execSync('curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp', { stdio: 'inherit' });
-            execSync('chmod a+rx /usr/local/bin/yt-dlp', { stdio: 'inherit' });
+            try {
+                // Try apk (Alpine)
+                execSync('apk add --no-cache yt-dlp', { stdio: 'inherit' });
+            } catch (apkError) {
+                console.log('Package managers failed, trying direct download...');
+                // Alternative installation method
+                execSync('curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp', { stdio: 'inherit' });
+                execSync('chmod a+rx /usr/local/bin/yt-dlp', { stdio: 'inherit' });
+            }
         }
     } else {
         // On local development, try to install via pip
