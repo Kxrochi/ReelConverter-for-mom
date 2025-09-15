@@ -70,6 +70,24 @@ app.get('/api/test', (req, res) => {
     });
 });
 
+// yt-dlp health check endpoint
+app.get('/api/ytdlp-check', async (req, res) => {
+    try {
+        const { stdout } = await execAsync('yt-dlp --version');
+        res.json({
+            status: 'OK',
+            ytdlp_version: stdout.trim(),
+            message: 'yt-dlp is working correctly'
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'ERROR',
+            message: 'yt-dlp is not available',
+            error: error.message
+        });
+    }
+});
+
 app.get('/api/info', (req, res) => {
     res.json({
         name: 'Instagram Reel Downloader',
@@ -123,6 +141,24 @@ app.post('/api/download', async (req, res) => {
         const command = `yt-dlp --no-playlist --write-info-json --write-sub --sub-langs "en" --output "${outputTemplate}" "${url}"`;
         
         try {
+            // Check if yt-dlp is available
+            try {
+                await execAsync('yt-dlp --version');
+            } catch (error) {
+                console.log('yt-dlp not found, trying alternative installation...');
+                try {
+                    await execAsync('pip install yt-dlp');
+                } catch (pipError) {
+                    console.log('pip install failed, trying direct download...');
+                    await execAsync('curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /tmp/yt-dlp && chmod +x /tmp/yt-dlp');
+                    // Use the downloaded version
+                    const commandWithPath = command.replace('yt-dlp', '/tmp/yt-dlp');
+                    const { stdout, stderr } = await execAsync(commandWithPath);
+                    console.log('yt-dlp stdout:', stdout);
+                    if (stderr) console.log('yt-dlp stderr:', stderr);
+                }
+            }
+            
             // Execute yt-dlp command
             const { stdout, stderr } = await execAsync(command);
             console.log('yt-dlp stdout:', stdout);

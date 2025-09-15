@@ -11,7 +11,15 @@ try {
     if (isRailway) {
         // On Railway, install yt-dlp using apt
         console.log('Installing yt-dlp via apt (Railway environment)...');
-        execSync('apt-get update && apt-get install -y yt-dlp', { stdio: 'inherit' });
+        try {
+            execSync('apt-get update', { stdio: 'inherit' });
+            execSync('apt-get install -y yt-dlp', { stdio: 'inherit' });
+        } catch (error) {
+            console.log('apt-get failed, trying alternative installation...');
+            // Alternative installation method
+            execSync('curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp', { stdio: 'inherit' });
+            execSync('chmod a+rx /usr/local/bin/yt-dlp', { stdio: 'inherit' });
+        }
     } else {
         // On local development, try to install via pip
         console.log('Installing yt-dlp via pip (local development)...');
