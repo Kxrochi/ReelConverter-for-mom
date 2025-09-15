@@ -62,6 +62,14 @@ app.get('/api/health', (req, res) => {
     });
 });
 
+// Test endpoint
+app.get('/api/test', (req, res) => {
+    res.json({
+        message: 'Server is working!',
+        timestamp: new Date().toISOString()
+    });
+});
+
 app.get('/api/info', (req, res) => {
     res.json({
         name: 'Instagram Reel Downloader',
@@ -81,10 +89,14 @@ app.get('/api/info', (req, res) => {
 // Instagram download endpoint
 app.post('/api/download', async (req, res) => {
     try {
+        console.log('Download endpoint hit');
+        console.log('Request body:', req.body);
+        
         const { url } = req.body;
         
         // Validate URL
         if (!url) {
+            console.log('No URL provided');
             return res.status(400).json({
                 success: false,
                 message: 'URL is required'
@@ -92,8 +104,9 @@ app.post('/api/download', async (req, res) => {
         }
         
         // Validate Instagram URL
-        const instagramRegex = /^https?:\/\/(www\.)?instagram\.com\/(p|reel|tv)\/[A-Za-z0-9_-]+\/?/;
+        const instagramRegex = /^https?:\/\/(www\.)?instagram\.com\/(p|reel|reels|tv)\/[A-Za-z0-9_-]+\/?/;
         if (!instagramRegex.test(url)) {
+            console.log('Invalid Instagram URL:', url);
             return res.status(400).json({
                 success: false,
                 message: 'Please provide a valid Instagram URL'
@@ -106,8 +119,8 @@ app.post('/api/download', async (req, res) => {
         const timestamp = Date.now();
         const outputTemplate = path.join(downloadsDir, `%(title)s_${timestamp}.%(ext)s`);
         
-        // yt-dlp command
-        const command = `yt-dlp --no-playlist --extract-flat false --write-info-json --output "${outputTemplate}" "${url}"`;
+        // yt-dlp command with caption extraction
+        const command = `yt-dlp --no-playlist --write-info-json --write-sub --sub-langs "en" --output "${outputTemplate}" "${url}"`;
         
         try {
             // Execute yt-dlp command
@@ -125,22 +138,51 @@ app.post('/api/download', async (req, res) => {
             
             // Process downloaded files
             const results = [];
+            let caption = '';
+            let title = '';
+            
+            // Try to extract caption from info.json file
+            try {
+                const infoFiles = downloadedFiles.filter(f => f.endsWith('.info.json'));
+                if (infoFiles.length > 0) {
+                    const infoPath = path.join(downloadsDir, infoFiles[0]);
+                    const infoData = await fs.readJson(infoPath);
+                    
+                    // Extract caption from metadata
+                    if (infoData.description) {
+                        caption = infoData.description;
+                    } else if (infoData.title) {
+                        caption = infoData.title;
+                    }
+                    
+                    // Extract title
+                    if (infoData.title) {
+                        title = infoData.title;
+                    } else if (infoData.uploader) {
+                        title = `Video by ${infoData.uploader}`;
+                    }
+                }
+            } catch (error) {
+                console.log('Could not extract caption from metadata:', error.message);
+            }
+            
             for (const file of downloadedFiles) {
                 const filePath = path.join(downloadsDir, file);
                 const stats = await fs.stat(filePath);
                 
-                // Skip info files
-                if (file.endsWith('.info.json')) continue;
+                // Skip info files and subtitle files
+                if (file.endsWith('.info.json') || file.endsWith('.vtt') || file.endsWith('.srt')) continue;
                 
                 const fileUrl = `/downloads/${file}`;
                 const fileSize = formatFileSize(stats.size);
                 
                 results.push({
-                    title: file.replace(/\.[^/.]+$/, ''), // Remove extension
+                    title: title || file.replace(/\.[^/.]+$/, ''), // Remove extension
                     downloadUrl: fileUrl,
                     size: fileSize,
                     quality: 'High',
-                    filename: file
+                    filename: file,
+                    caption: caption || 'No caption available'
                 });
             }
             
