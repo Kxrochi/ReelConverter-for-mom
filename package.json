@@ -1,21 +1,24 @@
 {
-  "name": "railway-website-template",
+  "name": "instagram-reel-downloader",
   "version": "1.0.0",
-  "description": "A modern website template ready for deployment on Railway",
+  "description": "A modern Instagram Reel downloader built with yt-dlp and Express.js",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "echo 'No build step required for this template'",
-    "test": "echo 'No tests specified'"
+    "build": "echo 'No build step required'",
+    "test": "echo 'No tests specified'",
+    "postinstall": "node scripts/install-ytdlp.js"
   },
   "keywords": [
-    "railway",
-    "website",
-    "template",
+    "instagram",
+    "downloader",
+    "reel",
+    "yt-dlp",
     "express",
     "nodejs",
-    "responsive"
+    "video",
+    "social-media"
   ],
   "author": "Your Name",
   "license": "MIT",
@@ -23,7 +26,12 @@
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "helmet": "^7.1.0",
-    "compression": "^1.7.4"
+    "compression": "^1.7.4",
+    "multer": "^1.4.5-lts.1",
+    "fs-extra": "^11.1.1",
+    "path": "^0.12.7",
+    "url": "^0.11.3",
+    "axios": "^1.6.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
@@ -34,10 +42,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/railway-website-template.git"
+    "url": "https://github.com/yourusername/instagram-reel-downloader.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/railway-website-template/issues"
+    "url": "https://github.com/yourusername/instagram-reel-downloader/issues"
   },
-  "homepage": "https://github.com/yourusername/railway-website-template#readme"
+  "homepage": "https://github.com/yourusername/instagram-reel-downloader#readme"
 }

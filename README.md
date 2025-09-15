@@ -1,39 +1,45 @@
-# Railway Website Template
+# Instagram Reel Downloader
 
-A modern, responsive website template specifically designed for deployment on Railway. This template includes everything you need to get started quickly with a beautiful, professional website.
+A modern, responsive Instagram Reel downloader built with yt-dlp and Express.js, specifically designed for deployment on Railway. Download Instagram Reels, posts, and IGTV videos quickly and easily.
 
 ## 🚀 Features
 
-- **Modern Design**: Clean, responsive UI with smooth animations
+- **High Quality Downloads**: Download Instagram Reels in the highest available quality
+- **Multiple Format Support**: Supports Reels, posts, IGTV, and Stories
+- **yt-dlp Powered**: Uses the powerful yt-dlp library for reliable downloads
+- **Modern Design**: Clean, responsive UI with Instagram-inspired styling
 - **Railway Ready**: Pre-configured for seamless deployment on Railway
 - **Express.js Server**: Robust backend with security and performance optimizations
 - **Mobile Responsive**: Works perfectly on all devices
-- **SEO Optimized**: Built with best practices for search engine optimization
-- **Security Headers**: Includes Helmet.js for security
-- **Performance Optimized**: Compression and caching for fast loading
-- **Contact Form**: Working contact form with validation
-- **API Endpoints**: Health check and info endpoints included
+- **No Registration**: Download without creating an account
+- **Secure**: No data collection or storage of personal information
+- **Fast Downloads**: Optimized for speed and reliability
 
 ## 📁 Project Structure
 
 ```
-├── index.html          # Main HTML file
-├── styles.css          # CSS styles
-├── script.js           # JavaScript functionality
-├── server.js           # Express.js server
-├── package.json        # Node.js dependencies
-├── railway.json        # Railway configuration
-├── Procfile           # Process file for Railway
-├── .gitignore         # Git ignore file
-└── README.md          # This file
+├── index.html              # Main HTML file
+├── styles.css              # CSS styles
+├── script.js               # JavaScript functionality
+├── server.js               # Express.js server
+├── package.json            # Node.js dependencies
+├── railway.json            # Railway configuration
+├── Procfile               # Process file for Railway
+├── .gitignore             # Git ignore file
+├── scripts/
+│   └── install-ytdlp.js   # yt-dlp installation script
+├── downloads/             # Downloaded files directory
+└── README.md              # This file
 ```
 
 ## 🛠️ Technologies Used
 
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
 - **Backend**: Node.js, Express.js
+- **Download Engine**: yt-dlp
 - **Security**: Helmet.js, CORS
 - **Performance**: Compression middleware
+- **File Management**: fs-extra
 - **Deployment**: Railway platform
 
 ## 🚀 Quick Start
@@ -147,27 +153,36 @@ The `railway.json` file contains Railway-specific configuration:
 
 - `GET /api/health` - Health check endpoint
 - `GET /api/info` - Application information
+- `POST /api/download` - Download Instagram content
 - `POST /api/contact` - Contact form submission
+- `GET /downloads/*` - Serve downloaded files
 
 ## 🎨 Customization
 
 ### Styling
 
 - Edit `styles.css` to modify the appearance
-- The design uses CSS custom properties for easy theming
+- The design uses Instagram-inspired colors and gradients
 - Responsive breakpoints are defined for mobile, tablet, and desktop
 
 ### Content
 
 - Update `index.html` to change the content
-- Modify the hero section, features, about, and contact sections
+- Modify the hero section, features, about, and help sections
 - Update the navigation menu as needed
 
 ### Functionality
 
 - Add new features in `script.js`
 - Create new API endpoints in `server.js`
+- Modify download behavior in the `/api/download` endpoint
 - Add new pages by creating additional HTML files
+
+### Download Settings
+
+- Modify yt-dlp options in `server.js`
+- Change output format and quality settings
+- Adjust file cleanup intervals
 
 ## 🔧 Development
 
@@ -194,13 +209,15 @@ To add a database:
 
 ## 🚀 Performance Optimization
 
-The template includes several performance optimizations:
+The downloader includes several performance optimizations:
 
 - **Compression**: Gzip compression for all responses
 - **Caching**: Static file caching with appropriate headers
 - **Security**: Helmet.js for security headers
 - **CORS**: Proper CORS configuration
 - **Error Handling**: Comprehensive error handling
+- **File Cleanup**: Automatic cleanup of old downloaded files
+- **yt-dlp Optimization**: Efficient video processing and downloading
 
 ## 🔒 Security
 
@@ -208,19 +225,22 @@ Security features included:
 
 - Helmet.js for security headers
 - CORS configuration
-- Input validation
+- Input validation and URL sanitization
 - Error handling without sensitive data exposure
-- Rate limiting (can be added)
+- File cleanup to prevent storage abuse
+- Instagram URL validation
+- No data collection or storage
 
 ## 📱 Mobile Responsive
 
-The template is fully responsive with:
+The downloader is fully responsive with:
 
 - Mobile-first design approach
 - Flexible grid layouts
-- Touch-friendly navigation
-- Optimized images and fonts
+- Touch-friendly navigation and download buttons
+- Optimized for mobile Instagram usage
 - Smooth animations and transitions
+- Instagram-inspired UI design
 
 ## 🐛 Troubleshooting
 
@@ -238,11 +258,19 @@ The template is fully responsive with:
    - Check the Railway logs
    - Ensure all dependencies are in package.json
    - Verify the start command in package.json
+   - Check if yt-dlp is properly installed
+
+4. **Download fails**
+   - Verify the Instagram URL is correct
+   - Check if the content is public
+   - Ensure yt-dlp is properly installed
+   - Check server logs for error details
 
 ### Getting Help
 
 - Check the [Railway Documentation](https://docs.railway.app)
 - Review the [Express.js Documentation](https://expressjs.com)
+- Check the [yt-dlp Documentation](https://github.com/yt-dlp/yt-dlp)
 - Open an issue in this repository
 
 ## 📄 License
@@ -269,11 +297,16 @@ If you have any questions or need help:
 
 - [Railway](https://railway.app) for the amazing deployment platform
 - [Express.js](https://expressjs.com) for the web framework
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) for the powerful download engine
 - [Font Awesome](https://fontawesome.com) for the icons
 - [Google Fonts](https://fonts.google.com) for the typography
 
 ---
 
-**Happy coding! 🚀**
+**Happy downloading! 📱**
 
-Built with ❤️ for the Railway community.
+Built with ❤️ for the Instagram community.
+
+## ⚠️ Legal Notice
+
+This tool is for personal use only. Please respect Instagram's Terms of Service and copyright laws. The developers are not responsible for any misuse of this application.

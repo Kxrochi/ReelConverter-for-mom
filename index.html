@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Railway</title>
+    <title>Instagram Reel Downloader</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -12,12 +12,12 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <i class="fas fa-rocket"></i>
-                <span>Railway App</span>
+                <i class="fab fa-instagram"></i>
+                <span>Reel Downloader</span>
             </div>
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="#home" class="nav-link">Home</a>
+                    <a href="#home" class="nav-link">Download</a>
                 </li>
                 <li class="nav-item">
                     <a href="#features" class="nav-link">Features</a>
@@ -26,7 +26,7 @@
                     <a href="#about" class="nav-link">About</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#contact" class="nav-link">Contact</a>
+                    <a href="#help" class="nav-link">Help</a>
                 </li>
             </ul>
             <div class="hamburger">
@@ -42,33 +42,75 @@
             <div class="hero-container">
                 <div class="hero-content">
                     <h1 class="hero-title">
-                        Welcome to Your
-                        <span class="gradient-text">Railway App</span>
+                        Download Instagram
+                        <span class="gradient-text">Reels & Videos</span>
                     </h1>
                     <p class="hero-description">
-                        A modern, responsive website template ready for deployment on Railway.
-                        Built with clean code and beautiful design.
+                        Fast, free, and easy Instagram Reel downloader. 
+                        Paste any Instagram Reel link and download high-quality videos instantly.
                     </p>
-                    <div class="hero-buttons">
-                        <button class="btn btn-primary">Get Started</button>
-                        <button class="btn btn-secondary">Learn More</button>
+                    
+                    <!-- Download Form -->
+                    <div class="download-form-container">
+                        <form id="downloadForm" class="download-form">
+                            <div class="input-group">
+                                <input 
+                                    type="url" 
+                                    id="reelUrl" 
+                                    placeholder="Paste Instagram Reel link here..." 
+                                    required
+                                    class="url-input"
+                                >
+                                <button type="submit" class="btn btn-download" id="downloadBtn">
+                                    <i class="fas fa-download"></i>
+                                    Download
+                                </button>
+                            </div>
+                            <div class="url-examples">
+                                <p>Supported formats:</p>
+                                <div class="example-links">
+                                    <span class="example-link">instagram.com/reel/...</span>
+                                    <span class="example-link">instagram.com/p/...</span>
+                                    <span class="example-link">instagram.com/tv/...</span>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <!-- Progress Bar -->
+                        <div id="progressContainer" class="progress-container" style="display: none;">
+                            <div class="progress-bar">
+                                <div id="progressBar" class="progress-fill"></div>
+                            </div>
+                            <div id="progressText" class="progress-text">Preparing download...</div>
+                        </div>
+                        
+                        <!-- Download Results -->
+                        <div id="downloadResults" class="download-results" style="display: none;">
+                            <div class="result-header">
+                                <i class="fas fa-check-circle"></i>
+                                <h3>Download Complete!</h3>
+                            </div>
+                            <div id="resultContent" class="result-content">
+                                <!-- Results will be populated here -->
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="hero-image">
                     <div class="floating-card">
-                        <i class="fas fa-code"></i>
-                        <h3>Clean Code</h3>
-                        <p>Modern, maintainable codebase</p>
+                        <i class="fas fa-video"></i>
+                        <h3>High Quality</h3>
+                        <p>Download in best available quality</p>
                     </div>
                     <div class="floating-card">
-                        <i class="fas fa-mobile-alt"></i>
-                        <h3>Responsive</h3>
-                        <p>Works on all devices</p>
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Safe & Secure</h3>
+                        <p>No data collection or storage</p>
                     </div>
                     <div class="floating-card">
                         <i class="fas fa-bolt"></i>
-                        <h3>Fast</h3>
-                        <p>Optimized for performance</p>
+                        <h3>Fast Download</h3>
+                        <p>Quick and reliable downloads</p>
                     </div>
                 </div>
             </div>
@@ -76,35 +118,35 @@
 
         <section id="features" class="features">
             <div class="container">
-                <h2 class="section-title">Features</h2>
+                <h2 class="section-title">Why Choose Our Downloader</h2>
                 <div class="features-grid">
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <i class="fas fa-rocket"></i>
+                            <i class="fas fa-download"></i>
                         </div>
-                        <h3>Railway Ready</h3>
-                        <p>Pre-configured for seamless deployment on Railway platform with all necessary files.</p>
+                        <h3>High Quality Downloads</h3>
+                        <p>Download Instagram Reels in the highest available quality with original audio preserved.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <i class="fas fa-palette"></i>
+                            <i class="fas fa-bolt"></i>
                         </div>
-                        <h3>Modern Design</h3>
-                        <p>Beautiful, clean interface with smooth animations and responsive layout.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-cogs"></i>
-                        </div>
-                        <h3>Easy Customization</h3>
-                        <p>Well-structured code that's easy to modify and extend for your needs.</p>
+                        <h3>Lightning Fast</h3>
+                        <p>Quick and efficient downloads powered by yt-dlp for maximum speed and reliability.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">
                             <i class="fas fa-shield-alt"></i>
                         </div>
-                        <h3>Secure</h3>
-                        <p>Built with security best practices and modern web standards.</p>
+                        <h3>100% Safe</h3>
+                        <p>No registration required, no data collection, and completely secure for your privacy.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>Mobile Friendly</h3>
+                        <p>Works perfectly on all devices - desktop, tablet, and mobile phones.</p>
                     </div>
                 </div>
             </div>
@@ -114,65 +156,77 @@
             <div class="container">
                 <div class="about-content">
                     <div class="about-text">
-                        <h2>About This Template</h2>
+                        <h2>About Instagram Reel Downloader</h2>
                         <p>
-                            This is a modern website template specifically designed for Railway deployment.
-                            It includes everything you need to get started quickly and deploy your application
-                            to Railway's cloud platform.
+                            Our Instagram Reel downloader is a powerful tool that allows you to download 
+                            Instagram Reels, posts, and IGTV videos quickly and easily. Built with yt-dlp 
+                            for maximum compatibility and reliability.
                         </p>
                         <ul class="about-list">
-                            <li><i class="fas fa-check"></i> Express.js server setup</li>
-                            <li><i class="fas fa-check"></i> Responsive HTML/CSS design</li>
-                            <li><i class="fas fa-check"></i> Railway configuration files</li>
-                            <li><i class="fas fa-check"></i> Package.json with dependencies</li>
+                            <li><i class="fas fa-check"></i> Supports all Instagram content types</li>
+                            <li><i class="fas fa-check"></i> High-quality video downloads</li>
+                            <li><i class="fas fa-check"></i> No registration required</li>
+                            <li><i class="fas fa-check"></i> Works on all devices</li>
                         </ul>
                     </div>
                     <div class="about-stats">
                         <div class="stat">
                             <h3>100%</h3>
-                            <p>Responsive</p>
+                            <p>Free</p>
                         </div>
                         <div class="stat">
                             <h3>Fast</h3>
-                            <p>Loading</p>
+                            <p>Downloads</p>
                         </div>
                         <div class="stat">
-                            <h3>Modern</h3>
-                            <p>Design</p>
+                            <h3>HD</h3>
+                            <p>Quality</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="contact" class="contact">
+        <section id="help" class="help">
             <div class="container">
-                <h2 class="section-title">Get In Touch</h2>
-                <div class="contact-content">
-                    <div class="contact-info">
-                        <h3>Let's work together</h3>
-                        <p>Ready to deploy your application? Contact us for support or customization.</p>
-                        <div class="contact-item">
-                            <i class="fas fa-envelope"></i>
-                            <span>hello@railwayapp.com</span>
+                <h2 class="section-title">How to Use</h2>
+                <div class="help-content">
+                    <div class="help-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Copy Instagram Link</h3>
+                                <p>Go to Instagram and copy the link of the Reel, post, or IGTV video you want to download.</p>
+                            </div>
                         </div>
-                        <div class="contact-item">
-                            <i class="fas fa-phone"></i>
-                            <span>+1 (555) 123-4567</span>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Paste & Download</h3>
+                                <p>Paste the link in the input field above and click the download button.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Save Your Video</h3>
+                                <p>Wait for the download to complete and save the high-quality video to your device.</p>
+                            </div>
                         </div>
                     </div>
-                    <form class="contact-form">
-                        <div class="form-group">
-                            <input type="text" placeholder="Your Name" required>
+                    <div class="help-info">
+                        <h3>Supported Content Types</h3>
+                        <ul class="help-list">
+                            <li><i class="fab fa-instagram"></i> Instagram Reels</li>
+                            <li><i class="fas fa-image"></i> Instagram Posts (Photos & Videos)</li>
+                            <li><i class="fas fa-tv"></i> IGTV Videos</li>
+                            <li><i class="fas fa-video"></i> Instagram Stories</li>
+                        </ul>
+                        <div class="help-note">
+                            <i class="fas fa-info-circle"></i>
+                            <p>All downloads are for personal use only. Please respect copyright and Instagram's terms of service.</p>
                         </div>
-                        <div class="form-group">
-                            <input type="email" placeholder="Your Email" required>
-                        </div>
-                        <div class="form-group">
-                            <textarea placeholder="Your Message" rows="5" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Send Message</button>
-                    </form>
+                    </div>
                 </div>
             </div>
         </section>
@@ -182,30 +236,30 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>Railway App</h3>
-                    <p>Modern web applications deployed on Railway.</p>
+                    <h3>Instagram Reel Downloader</h3>
+                    <p>Download Instagram Reels, posts, and IGTV videos quickly and easily.</p>
                 </div>
                 <div class="footer-section">
                     <h4>Quick Links</h4>
                     <ul>
-                        <li><a href="#home">Home</a></li>
+                        <li><a href="#home">Download</a></li>
                         <li><a href="#features">Features</a></li>
                         <li><a href="#about">About</a></li>
-                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#help">Help</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
-                    <h4>Resources</h4>
+                    <h4>Legal</h4>
                     <ul>
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">API</a></li>
-                        <li><a href="#">Support</a></li>
-                        <li><a href="#">GitHub</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">DMCA</a></li>
+                        <li><a href="#">Contact</a></li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Railway App. All rights reserved.</p>
+                <p>&copy; 2024 Instagram Reel Downloader. All rights reserved. | For personal use only.</p>
             </div>
         </div>
     </footer>

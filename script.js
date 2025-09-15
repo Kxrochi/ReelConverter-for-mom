@@ -39,46 +39,187 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Form submission handler
-const contactForm = document.querySelector('.contact-form');
-if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
+// Download form handler
+const downloadForm = document.getElementById('downloadForm');
+const downloadBtn = document.getElementById('downloadBtn');
+const progressContainer = document.getElementById('progressContainer');
+const progressBar = document.getElementById('progressBar');
+const progressText = document.getElementById('progressText');
+const downloadResults = document.getElementById('downloadResults');
+const resultContent = document.getElementById('resultContent');
+
+if (downloadForm) {
+    downloadForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Get form data
-        const formData = new FormData(this);
-        const name = this.querySelector('input[type="text"]').value;
-        const email = this.querySelector('input[type="email"]').value;
-        const message = this.querySelector('textarea').value;
+        const urlInput = document.getElementById('reelUrl');
+        const url = urlInput.value.trim();
         
-        // Simple validation
-        if (!name || !email || !message) {
-            alert('Please fill in all fields.');
+        // Validate URL
+        if (!url) {
+            showError('Please enter an Instagram URL');
             return;
         }
         
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            alert('Please enter a valid email address.');
+        if (!isValidInstagramUrl(url)) {
+            showError('Please enter a valid Instagram URL');
             return;
         }
         
-        // Simulate form submission
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        
-        submitBtn.textContent = 'Sending...';
-        submitBtn.disabled = true;
-        
-        // Simulate API call
-        setTimeout(() => {
-            alert('Thank you for your message! We\'ll get back to you soon.');
-            this.reset();
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-        }, 2000);
+        // Start download process
+        await startDownload(url);
     });
+}
+
+// Validate Instagram URL
+function isValidInstagramUrl(url) {
+    const instagramRegex = /^https?:\/\/(www\.)?instagram\.com\/(p|reel|tv)\/[A-Za-z0-9_-]+\/?/;
+    return instagramRegex.test(url);
+}
+
+// Show error message
+function showError(message) {
+    // Create or update error message
+    let errorDiv = document.querySelector('.error-message');
+    if (!errorDiv) {
+        errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.style.cssText = `
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            text-align: center;
+        `;
+        downloadForm.appendChild(errorDiv);
+    }
+    errorDiv.textContent = message;
+    
+    // Remove error after 5 seconds
+    setTimeout(() => {
+        if (errorDiv) {
+            errorDiv.remove();
+        }
+    }, 5000);
+}
+
+// Start download process
+async function startDownload(url) {
+    try {
+        // Show progress
+        showProgress();
+        updateProgress(10, 'Validating URL...');
+        
+        // Disable form
+        downloadBtn.disabled = true;
+        downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
+        
+        // Hide previous results
+        downloadResults.style.display = 'none';
+        
+        // Make API call
+        updateProgress(30, 'Fetching video information...');
+        
+        const response = await fetch('/api/download', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url: url })
+        });
+        
+        updateProgress(60, 'Processing video...');
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Download failed');
+        }
+        
+        const data = await response.json();
+        
+        updateProgress(90, 'Preparing download...');
+        
+        // Show results
+        setTimeout(() => {
+            showResults(data);
+            hideProgress();
+            resetForm();
+        }, 1000);
+        
+    } catch (error) {
+        console.error('Download error:', error);
+        showError(error.message || 'Download failed. Please try again.');
+        hideProgress();
+        resetForm();
+    }
+}
+
+// Show progress bar
+function showProgress() {
+    progressContainer.style.display = 'block';
+    progressBar.style.width = '0%';
+}
+
+// Update progress
+function updateProgress(percent, text) {
+    progressBar.style.width = percent + '%';
+    progressText.textContent = text;
+}
+
+// Hide progress bar
+function hideProgress() {
+    progressContainer.style.display = 'none';
+}
+
+// Show download results
+function showResults(data) {
+    resultContent.innerHTML = '';
+    
+    if (data.videos && data.videos.length > 0) {
+        data.videos.forEach((video, index) => {
+            const videoDiv = document.createElement('div');
+            videoDiv.className = 'download-item';
+            videoDiv.innerHTML = `
+                <div class="download-info">
+                    <h4>${video.title || `Video ${index + 1}`}</h4>
+                    <p>Quality: ${video.quality || 'Unknown'} | Size: ${video.size || 'Unknown'}</p>
+                </div>
+                <a href="${video.downloadUrl}" class="download-btn" download>
+                    <i class="fas fa-download"></i> Download
+                </a>
+            `;
+            resultContent.appendChild(videoDiv);
+        });
+    } else if (data.downloadUrl) {
+        const videoDiv = document.createElement('div');
+        videoDiv.className = 'download-item';
+        videoDiv.innerHTML = `
+            <div class="download-info">
+                <h4>${data.title || 'Instagram Video'}</h4>
+                <p>Quality: ${data.quality || 'High'} | Size: ${data.size || 'Unknown'}</p>
+            </div>
+            <a href="${data.downloadUrl}" class="download-btn" download>
+                <i class="fas fa-download"></i> Download
+            </a>
+        `;
+        resultContent.appendChild(videoDiv);
+    } else {
+        resultContent.innerHTML = '<p>No downloadable content found.</p>';
+    }
+    
+    downloadResults.style.display = 'block';
+    
+    // Scroll to results
+    downloadResults.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Reset form
+function resetForm() {
+    downloadBtn.disabled = false;
+    downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download';
+    document.getElementById('reelUrl').value = '';
 }
 
 // Intersection Observer for animations
@@ -169,14 +310,14 @@ document.head.appendChild(style);
 
 // Console welcome message
 console.log(`
-🚀 Welcome to Railway App Template!
+📱 Welcome to Instagram Reel Downloader!
    
-   This template is ready for deployment on Railway.
+   Download Instagram Reels, posts, and IGTV videos easily.
    Features:
-   ✅ Responsive design
-   ✅ Modern UI/UX
-   ✅ Express.js server
-   ✅ Railway configuration
+   ✅ High-quality downloads
+   ✅ Multiple format support
+   ✅ Fast and secure
+   ✅ Mobile responsive
    
-   Happy coding! 🎉
+   Start downloading! 🎉
 `);

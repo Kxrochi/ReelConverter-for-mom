@@ -3,9 +3,17 @@ const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
+const fs = require('fs-extra');
+const { exec } = require('child_process');
+const { promisify } = require('util');
 
+const execAsync = promisify(exec);
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Create downloads directory
+const downloadsDir = path.join(__dirname, 'downloads');
+fs.ensureDirSync(downloadsDir);
 
 // Security middleware
 app.use(helmet({
@@ -41,6 +49,9 @@ app.use(express.static(path.join(__dirname), {
     maxAge: process.env.NODE_ENV === 'production' ? '1d' : '0'
 }));
 
+// Serve downloads directory
+app.use('/downloads', express.static(downloadsDir));
+
 // API Routes
 app.get('/api/health', (req, res) => {
     res.json({
@@ -53,19 +64,137 @@ app.get('/api/health', (req, res) => {
 
 app.get('/api/info', (req, res) => {
     res.json({
-        name: 'Railway Website Template',
+        name: 'Instagram Reel Downloader',
         version: '1.0.0',
-        description: 'A modern website template ready for deployment on Railway',
+        description: 'Download Instagram Reels, posts, and IGTV videos easily',
         features: [
-            'Responsive Design',
-            'Modern UI/UX',
-            'Express.js Server',
-            'Railway Ready',
-            'Security Headers',
-            'Performance Optimized'
+            'High Quality Downloads',
+            'Multiple Format Support',
+            'Fast & Secure',
+            'Mobile Responsive',
+            'No Registration Required',
+            'yt-dlp Powered'
         ]
     });
 });
+
+// Instagram download endpoint
+app.post('/api/download', async (req, res) => {
+    try {
+        const { url } = req.body;
+        
+        // Validate URL
+        if (!url) {
+            return res.status(400).json({
+                success: false,
+                message: 'URL is required'
+            });
+        }
+        
+        // Validate Instagram URL
+        const instagramRegex = /^https?:\/\/(www\.)?instagram\.com\/(p|reel|tv)\/[A-Za-z0-9_-]+\/?/;
+        if (!instagramRegex.test(url)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide a valid Instagram URL'
+            });
+        }
+        
+        console.log('Download request for URL:', url);
+        
+        // Generate unique filename
+        const timestamp = Date.now();
+        const outputTemplate = path.join(downloadsDir, `%(title)s_${timestamp}.%(ext)s`);
+        
+        // yt-dlp command
+        const command = `yt-dlp --no-playlist --extract-flat false --write-info-json --output "${outputTemplate}" "${url}"`;
+        
+        try {
+            // Execute yt-dlp command
+            const { stdout, stderr } = await execAsync(command);
+            console.log('yt-dlp stdout:', stdout);
+            if (stderr) console.log('yt-dlp stderr:', stderr);
+            
+            // Find downloaded files
+            const files = await fs.readdir(downloadsDir);
+            const downloadedFiles = files.filter(file => file.includes(timestamp.toString()));
+            
+            if (downloadedFiles.length === 0) {
+                throw new Error('No files were downloaded');
+            }
+            
+            // Process downloaded files
+            const results = [];
+            for (const file of downloadedFiles) {
+                const filePath = path.join(downloadsDir, file);
+                const stats = await fs.stat(filePath);
+                
+                // Skip info files
+                if (file.endsWith('.info.json')) continue;
+                
+                const fileUrl = `/downloads/${file}`;
+                const fileSize = formatFileSize(stats.size);
+                
+                results.push({
+                    title: file.replace(/\.[^/.]+$/, ''), // Remove extension
+                    downloadUrl: fileUrl,
+                    size: fileSize,
+                    quality: 'High',
+                    filename: file
+                });
+            }
+            
+            // Clean up old files (older than 1 hour)
+            await cleanupOldFiles();
+            
+            res.json({
+                success: true,
+                videos: results,
+                message: 'Download completed successfully'
+            });
+            
+        } catch (error) {
+            console.error('yt-dlp error:', error);
+            throw new Error('Failed to download video. Please check the URL and try again.');
+        }
+        
+    } catch (error) {
+        console.error('Download error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Download failed. Please try again later.'
+        });
+    }
+});
+
+// Helper function to format file size
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Helper function to clean up old files
+async function cleanupOldFiles() {
+    try {
+        const files = await fs.readdir(downloadsDir);
+        const oneHourAgo = Date.now() - (60 * 60 * 1000);
+        
+        for (const file of files) {
+            const filePath = path.join(downloadsDir, file);
+            const stats = await fs.stat(filePath);
+            
+            if (stats.mtime.getTime() < oneHourAgo) {
+                await fs.remove(filePath);
+                console.log('Cleaned up old file:', file);
+            }
+        }
+    } catch (error) {
+        console.error('Cleanup error:', error);
+    }
+}
 
 // Contact form submission endpoint
 app.post('/api/contact', (req, res) => {
@@ -136,14 +265,15 @@ app.use((req, res) => {
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`
-🚀 Railway Website Template Server Started!
+📱 Instagram Reel Downloader Server Started!
    
    📍 Server running on port ${PORT}
    🌐 Environment: ${process.env.NODE_ENV || 'development'}
    🔗 Local: http://localhost:${PORT}
    📊 Health check: http://localhost:${PORT}/api/health
+   📁 Downloads: http://localhost:${PORT}/downloads
    
-   Ready for Railway deployment! 🎉
+   Ready to download Instagram content! 🎉
     `);
 });
 
