@@ -7,8 +7,7 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "build": "echo 'No build step required'",
-    "test": "echo 'No tests specified'",
-    "postinstall": "node scripts/install-ytdlp.js"
+    "test": "echo 'No tests specified'"
   },
   "keywords": [
     "instagram",
